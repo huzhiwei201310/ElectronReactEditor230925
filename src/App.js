@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Row, Col } from 'antd'
 import FileDirectory from './components/fileDirectory'
 import ContentEditor from './components/contentEditor'
@@ -7,6 +7,7 @@ import { flattenArr, objToArr } from './utils/helper'
 
 
 const fs = window.require('fs')
+const { ipcRenderer } = window.require('electron')
 const Store = window.require('electron-store')
 const fileStore = new Store({name: 'Files Data'})
 
@@ -25,7 +26,6 @@ const saveFilesToStore = (files) => {
 }
 
 function App() {
-  console.log(fileStore.get('files'), 'fileStore.get(files)')
   const [files, setFiles] = useState(fileStore.get('files') || {})
   const [activeFileId, setActiveFileId] = useState('')
   const [openedFileIds, setOpenedFileIds] = useState([])
@@ -38,6 +38,16 @@ function App() {
       setActiveFileId(tabsWithout[0] || '')
     }
   }
+
+  useEffect(() => {
+    const callback = () => {
+      console.log('hello from menu')
+    }
+    ipcRenderer.on('create-new-file', callback)
+    return () => {
+      ipcRenderer.removeListener('create-new-file', callback)
+    }
+  })
 
   const fileDirectoryProps = {
     files,

@@ -3,7 +3,7 @@ import { List, Button, Row, Col, Input } from 'antd'
 import { FileMarkdownOutlined, FormOutlined, DeleteOutlined, CloseOutlined } from '@ant-design/icons'
 import useKeyPress from '../../hooks/useKeyPress'
 import useContextMenu from '../../hooks/useContextMenu'
-import { flattenArr, objToArr } from '../../utils/helper'
+import { flattenArr, objToArr, getParentNode } from '../../utils/helper'
 
 // const remote = window.require('@electron/remote')
 // const {Menu, MenuItem} = remote
@@ -33,22 +33,32 @@ const FileList: React.FC<FileListProps> = ({files, onFileClick, onSaveEdit, onFi
     {
       label: '打开',
       click: () => {
-        console.log('打开', clickedItem.current)
+        const parentElement = getParentNode(clickedItem.current, 'ant-list-item')
+        if (parentElement) {
+          onFileClick(parentElement.dataset.id)
+        }
       }
     },
     {
       label: '删除',
       click: () => {
-        console.log('删除', clickedItem)
+        const parentElement = getParentNode(clickedItem.current, 'ant-list-item')
+        if (parentElement) {
+          onFileDelete(parentElement.dataset.id)
+        }
       }
     },
     {
       label: '重命名',
       click: () => {
-        console.log('重命名', clickedItem)
+        const parentElement = getParentNode(clickedItem.current, 'ant-list-item')
+        if (parentElement) {
+          setEditStatus(parentElement.dataset.id)
+          setValue(parentElement.dataset.title)
+        }
       }
     }
-  ], '.fileList')
+  ], '.fileList', [files])
 
   const closeSearch = (editItem) => {
     setEditStatus('')
@@ -91,16 +101,16 @@ const FileList: React.FC<FileListProps> = ({files, onFileClick, onSaveEdit, onFi
       // footer={<div>Footer</div>}
       bordered
       dataSource={objToArr(files)}
-      renderItem={(item) => <List.Item style={{padding: 12}}>
+      renderItem={(item) => <List.Item style={{padding: 12}} data-id={item.id} data-title={item.title}>
         {(item.id !== editStatus && !item.isNew) && <>
           <span style={{cursor: 'pointer'}} onClick={() => {onFileClick(item.id)}}><FileMarkdownOutlined style={{padding: '0 5px'}} />{item?.title}</span>
-          <div>
+          {/* <div>
             <Button type="link" shape="circle" icon={<FormOutlined style={{color: '#333'}} />} onClick={() => {
               setEditStatus(item.id)
               setValue(item.title)
             }} />
             <Button type="link" shape="circle" icon={<DeleteOutlined style={{color: '#333'}} />} onClick={() => {onFileDelete(item.id)}} />
-          </div>
+          </div> */}
         </>}
         {
           (item.id === editStatus || item.isNew) && <Row style={{width: '100%'}} align='middle' justify='space-between'>

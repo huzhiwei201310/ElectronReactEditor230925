@@ -10,6 +10,7 @@ import fileHelper from '../../utils/fileHelper'
 import './index.less'
 
 // 引入node.js 模块
+const fs = window.require('fs')
 const { join, basename, extname, dirname } = window.require('path')
 const remote = window.require('@electron/remote')
 
@@ -56,10 +57,19 @@ const FileDirectory: React.FC<FileDirectoryProps> = ({
     setActiveFileId(id)
     const currentFile = files[id]
     if (!currentFile.isLoaded) {
-      fileHelper.readFile(currentFile.path).then(value => {
-        const newFile = {...currentFile, body: value, isLoaded: true}
-        setFiles({...files, [id]: newFile})
-      })
+      try {
+        fs.accessSync(currentFile.path)
+        fileHelper.readFile(currentFile.path).then(value => {
+          const newFile = {...currentFile, body: value, isLoaded: true}
+          setFiles({...files, [id]: newFile})
+        })
+      } catch (error) {
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: `系统中不存在此文件`,
+          message: `系统中不存在此文件`,
+        })
+      }
     }
     if (!openedFileIds.includes(id)) {
       setOpenedFileIds([...openedFileIds, id])
@@ -86,12 +96,21 @@ const FileDirectory: React.FC<FileDirectoryProps> = ({
         })
       }
     } else {
-      const oldPath = files[id].path
-      fileHelper.renameFile(oldPath, newPath)
-      .then(() => {
-        setFiles(newFiles)
-        saveFilesToStore(newFiles)
-      })
+      try {
+        const oldPath = files[id].path
+        fs.accessSync(oldPath)
+        fileHelper.renameFile(oldPath, newPath)
+        .then(() => {
+          setFiles(newFiles)
+          saveFilesToStore(newFiles)
+        })
+      } catch (error) {
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: `系统中不存在此文件`,
+          message: `系统中不存在此文件`,
+        })
+      }
     }
   }
   const onFileDelete = (id: string) => {
@@ -101,14 +120,29 @@ const FileDirectory: React.FC<FileDirectoryProps> = ({
       const { [id]: value, ...afterDelete} = files
       setFiles(afterDelete)
     } else {
-      fileHelper.deleteFile(files[id].path).then(() => {
+      try {
+        fs.accessSync(files[id].path)
+        fileHelper.deleteFile(files[id].path).then(() => {
+          const { [id]: value, ...afterDelete} = files
+          setFiles(afterDelete)
+          saveFilesToStore(afterDelete)
+          if (openedFileIds.includes(id)) {
+            tabClose(id)
+          }
+        })
+      } catch (error) {
+        remote.dialog.showMessageBox({
+          type: 'info',
+          title: `系统中不存在此文件`,
+          message: `系统中不存在此文件`,
+        })
         const { [id]: value, ...afterDelete} = files
         setFiles(afterDelete)
         saveFilesToStore(afterDelete)
         if (openedFileIds.includes(id)) {
           tabClose(id)
         }
-      })
+      }
     }
   }
   const fileSearch = (keyword) => {

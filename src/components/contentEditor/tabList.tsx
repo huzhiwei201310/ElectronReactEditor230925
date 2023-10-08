@@ -10,7 +10,6 @@ type TabListProps = {
 }
 const TabList: React.FC<TabListProps> = ({files, activeId, unsaveIds, onTabClick, onCloseTab}) => {
 
-  console.log(files, 'files---')
   const fileList = files.map(item => {
     const isUnsave = unsaveIds.includes(item.key)
     return {

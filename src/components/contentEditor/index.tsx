@@ -55,7 +55,6 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
     unsaveIds: unsavedFileIds,
     onTabClick: (id) => {
       setActiveFileId(id)
-      console.log(id, 'onTabClick')
     },
     onCloseTab: tabClose
   }

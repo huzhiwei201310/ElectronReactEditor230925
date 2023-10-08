@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react"
 const remote = window.require('@electron/remote')
 const {Menu, MenuItem} = remote
 
-const useContextMenu = (itemArr, targetSelector) => {
+const useContextMenu = (itemArr, targetSelector, deps) => {
   const clickedElement = useRef(null)
   useEffect(() => {
     const menu = new Menu()
@@ -20,7 +20,7 @@ const useContextMenu = (itemArr, targetSelector) => {
     return () => {
       window.removeEventListener('contextmenu', handleContextMenu)
     }
-  }, [])
+  }, deps)
   return clickedElement
 }
 
