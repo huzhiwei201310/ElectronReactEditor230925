@@ -5,7 +5,6 @@ import ContentEditor from './components/contentEditor'
 import defaultFiles from './utils/defaultFiles'
 import { flattenArr, objToArr } from './utils/helper'
 
-
 const fs = window.require('fs')
 const { ipcRenderer } = window.require('electron')
 const Store = window.require('electron-store')
@@ -38,16 +37,6 @@ function App() {
       setActiveFileId(tabsWithout[0] || '')
     }
   }
-
-  useEffect(() => {
-    const callback = () => {
-      console.log('hello from menu')
-    }
-    ipcRenderer.on('create-new-file', callback)
-    return () => {
-      ipcRenderer.removeListener('create-new-file', callback)
-    }
-  })
 
   const fileDirectoryProps = {
     files,

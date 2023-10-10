@@ -7,6 +7,7 @@ import FileSearch from './fileSearch'
 import FileList from './fileList'
 import { flattenArr, objToArr } from '../../utils/helper'
 import fileHelper from '../../utils/fileHelper'
+import useIpcRenderer from '../../hooks/useIpcRenderer'
 import './index.less'
 
 // 引入node.js 模块
@@ -205,6 +206,11 @@ const FileDirectory: React.FC<FileDirectoryProps> = ({
       }
     }
   }
+
+  useIpcRenderer({
+    'create-new-file': createNewFile,
+    'import-file': importFiles,
+  })
 
   return (
     <div className={'fileDirectory'}>

@@ -5,6 +5,7 @@ import SimpleMDE from 'react-simplemde-editor'
 import * as marked from 'marked'
 import TabList from './tabList'
 import fileHelper from '../../utils/fileHelper'
+import useIpcRenderer from '../../hooks/useIpcRenderer'
 import 'easymde/dist/easymde.min.css'
 import './index.less'
 
@@ -84,6 +85,10 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
     })
   }
 
+  useIpcRenderer({
+    'save-edit-file': saveCurrentFile
+  })
+
   return (
     <div>
       {
@@ -98,7 +103,6 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
         onChange={fileChange}
         options={options}
       />
-      <Button type="primary" icon={<SaveOutlined />} block style={{background: 'green'}} onClick={saveCurrentFile}>保存</Button>
     </div>
   )
 }

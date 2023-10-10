@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'
 import { Input, Row, Col } from 'antd'
 import { SearchOutlined, CloseOutlined } from '@ant-design/icons'
 import useKeyPress from '../../hooks/useKeyPress'
+import useIpcRenderer from '../../hooks/useIpcRenderer'
 
 type FileSearchProps = {
   title: string,
@@ -34,6 +35,12 @@ const FileSearch: React.FC<FileSearchProps> = ({title, onFileSearch}) => {
       node.current?.focus()
     }
   }, [inputActive])
+
+  useIpcRenderer({
+    'search-file': () => {
+      setInputActive(true)
+    }
+  })
 
   return (
     <div className='fileSearch'>
