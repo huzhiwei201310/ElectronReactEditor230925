@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Row, Col } from 'antd'
 import FileDirectory from './components/fileDirectory'
 import ContentEditor from './components/contentEditor'
+import SettingsModal from './components/modal/settingsModal'
+import useIpcRenderer from '../src/hooks/useIpcRenderer'
 import defaultFiles from './utils/defaultFiles'
 import { flattenArr, objToArr } from './utils/helper'
 
@@ -29,6 +31,7 @@ function App() {
   const [activeFileId, setActiveFileId] = useState('')
   const [openedFileIds, setOpenedFileIds] = useState([])
   const [unsavedFileIds, setUnsavedFileIds] = useState([])
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const tabClose = (id) => {
     const tabsWithout = openedFileIds.filter(fileId => fileId !== id)
@@ -50,6 +53,14 @@ function App() {
     tabClose,
     saveFilesToStore,
   }
+  const settingsModalProps = {
+    isModalOpen, setIsModalOpen
+  }
+  useIpcRenderer({
+    'open-settings-window': () => {
+      setIsModalOpen(true)
+    }
+  })
   return (
     <div className="App">
       <Row>
@@ -60,6 +71,7 @@ function App() {
           <ContentEditor {...fileDirectoryProps} />
         </Col>
       </Row>
+      <SettingsModal {...settingsModalProps} />
     </div>
   );
 }
