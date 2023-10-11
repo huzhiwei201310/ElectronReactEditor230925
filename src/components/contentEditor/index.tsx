@@ -70,6 +70,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
   const options = useMemo(() => {
     return {
       minHeight: '600px',
+      maxHeight: '600px',
       previewRender: (plainText, preview) => {
         setTimeout(() => {
           preview.innerHTML = marked.parse(plainText)
