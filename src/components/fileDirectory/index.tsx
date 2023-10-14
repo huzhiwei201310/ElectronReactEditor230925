@@ -14,6 +14,8 @@ import './index.less'
 const fs = window.require('fs')
 const { join, basename, extname, dirname } = window.require('path')
 const remote = window.require('@electron/remote')
+const Store = window.require('electron-store')
+const settingsStore = new Store({name: 'Settings'})
 
 type fileProps = {
   id: string,
@@ -52,7 +54,7 @@ const FileDirectory: React.FC<FileDirectoryProps> = ({
 }) => {
   const [messageApi, contextHolder] = message.useMessage()
   const [searchedFiles, setSearchedFiles] = useState([])
-  const savedLocation = remote.app.getPath('documents')
+  const savedLocation = settingsStore.get('savedFileLocaltion') || remote.app.getPath('documents')
 
   const onFileClick = (id: string) => {
     setActiveFileId(id)

@@ -1,6 +1,8 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { Modal, Form, Button, Input } from 'antd'
 const remote = window.require('@electron/remote')
+const Store = window.require('electron-store')
+const settingsStore = new Store({name: 'Settings'})
 
 const { Search } = Input
 
@@ -18,9 +20,17 @@ const formItemLayout = {
 const SettingsModal = ({isModalOpen, setIsModalOpen}) => {
   const [form] = Form.useForm()
 
+  useEffect(() => {
+    if (isModalOpen) {
+      const pathName = settingsStore.get('savedFileLocaltion')
+      form.setFieldValue('pathName', pathName)
+    }
+  }, [isModalOpen])
+
   const handleOk = () => {
     form.validateFields().then((values) => {
-      console.log(values, 'values---')
+      settingsStore.set('savedFileLocaltion', values.pathName)
+      handleCancel()
     })
   }
 
@@ -37,8 +47,7 @@ const SettingsModal = ({isModalOpen, setIsModalOpen}) => {
       properties: ['openDirectory'],
       message: '选择文件的存储路径'
     }).then((result) => {
-      console.log(result, 'path')
-      if (Array.isArray(result.filePaths)) {
+      if (Array.isArray(result.filePaths) && result.filePaths?.length) {
         form.setFieldValue('pathName', result.filePaths[0])
       }
     })
