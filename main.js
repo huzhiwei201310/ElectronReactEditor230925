@@ -9,7 +9,7 @@ Store.initRenderer();
 const path = require('path')
 let mainWindow, settingsWindow;
 
-app.on('ready', () => {
+app.whenReady().then(() => {
   const urlLocation = isDev ? 'http://localhost:3000' : 'dummyurl'
   mainWindow = new AppWindow({
     width: 1024,
