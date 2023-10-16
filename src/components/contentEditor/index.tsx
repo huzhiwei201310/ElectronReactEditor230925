@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react"
-import { Alert, Button } from 'antd'
+import { Alert, Button, Skeleton } from 'antd'
 import { SaveOutlined } from '@ant-design/icons'
 import SimpleMDE from 'react-simplemde-editor'
 import * as marked from 'marked'
@@ -93,17 +93,24 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
   return (
     <div>
       {
-        !activeFile && <Alert
-          message="选择或者创建新地 Markdown 文档"
-          type="warning"
-        />
+        !activeFile && <div style={{padding: 20}}>
+          <Alert
+            message="选择或者创建新地 Markdown 文档"
+            type="warning"
+          />
+          <Skeleton active />
+        </div>
       }
-      <TabList {...tabListProps} />
-      <SimpleMDE
-        value={activeFile?.body}
-        onChange={fileChange}
-        options={options}
-      />
+      {
+        activeFile && <>
+          <TabList {...tabListProps} />
+          <SimpleMDE
+            value={activeFile?.body}
+            onChange={fileChange}
+            options={options}
+          />
+        </>
+      }
     </div>
   )
 }
